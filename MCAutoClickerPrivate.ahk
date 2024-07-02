@@ -4,10 +4,10 @@ SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode 1
 
 isActive = 0
-bButton = 0   ; 0 = LMB, 1 = RMB
+bButton = 0 ; 0 = LMB, 1 = RMB
 
 IniRead, game_title, %A_ScriptDir%\MCAutoClicker.ini, Minecraft, Window Title, Minecraft Forge
-IniRead, click_interval, %A_ScriptDir%\MCAutoClicker.ini, Minecraft, Click Interval, 500
+; IniRead, click_interval, %A_ScriptDir%\MCAutoClicker.ini, Minecraft, Click Interval, 500
 IniRead, beep, %A_ScriptDir%\MCAutoClicker.ini, General, Beep, 0
 
 #If WinExist(game_title)
@@ -17,51 +17,40 @@ F10::GoSub, ToggleActive
 F11::GoSub, ToggleButton
 
 ToggleActive:
-    if (beep = 1) && (isActive = 0)
+    If (beep = 1) && (isActive = 0)
 	{
 	    SoundBeep, 500, 500
 	}
 	
-	if (MHWND = "")
+	If (MHWND = "")
 	{
 	    ControlGet, MHWND, Hwnd,,, %game_title%
 	}
 	
-	if (isActive := !isActive)
+	If (isActive := !isActive)
 	{
 	    GoSub, RepeatClick
 	}
-	else
+	Else
 	{
-	    SetControlDelay -1
-	    ControlClick,, ahk_id %MHWND%,,Left,,U
-	    ControlClick,, ahk_id %MHWND%,,Right,,U   
+	    GoSub, ResetClick
 	}
 	
 	Return
 
 ToggleButton:
-    if (beep = 1) 
+    If (beep = 1) 
 	{
 		SoundBeep, 500, 250
 	}
 		
-	if (isActive = 1)
+	If (isActive = 1)
 	{
-	    SetControlDelay -1
-		if (bButton = 0)
-		{
-		    ControlClick,, ahk_id %MHWND%,,Left,,U
-		}
-		else
-		{
-		    ControlClick,, ahk_id %MHWND%,,Right,,U
-		}
-	    
+		GoSub, ResetClick
 		bButton := !bButton
 	    GoSub, RepeatClick
 	}
-	else
+	Else
 	{
 	    bButton := !bButton
 	}
@@ -70,14 +59,25 @@ ToggleButton:
 	
 	
 RepeatClick:
-    SetControlDelay -1
-	if (bButton = 0)
-	    {
-		    ControlClick,, ahk_id %MHWND%,,Left,,D
-	    }
-	else
-	    {
-	        ControlClick,, ahk_id %MHWND%,,Right,,D
-	    }
-
-
+	If (bButton = 0)
+	{
+		ControlClick,, ahk_id %MHWND%,,Left,,D
+	}
+	Else
+	{
+	    ControlClick,, ahk_id %MHWND%,,Right,,D
+	}
+	
+	Return
+	
+ResetClick:
+    If (bButton = 0)
+	{
+	    ControlClick,, ahk_id %MHWND%,,Left,,U
+	}
+	Else
+	{
+		ControlClick,, ahk_id %MHWND%,,Right,,U
+	}
+	
+	Return
